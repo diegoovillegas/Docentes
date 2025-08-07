@@ -1,0 +1,29 @@
+.login-background {
+  background: linear-gradient(180deg, #4c1d95 0%, #ec4899 100%);
+  display: flow-root;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 30px;
+  padding: 60px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-title {
+  color: #fff;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+.login-button {
+  --background: #ec4899;
+  --background-hover: #db2777;
+  border-radius: 12px;
+  margin-top: 20px;
+  color: #fff;
+}

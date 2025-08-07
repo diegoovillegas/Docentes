@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Historial</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="historial.length > 0; else noData">
+    <ion-item *ngFor="let item of historial">
+      <ion-label>
+        <h2>Fecha: {{ item.attributes.createdAt | date:'short' }}</h2>
+        <p>Alumno ID: {{ item.attributes.alumno.data.id }}</p>
+        <!-- Agrega más campos según lo que traiga tu API -->
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #noData>
+    <ion-item>
+      <ion-label>No hay historial disponible</ion-label>
+    </ion-item>
+  </ng-template>
+</ion-content>
