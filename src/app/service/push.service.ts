@@ -17,7 +17,7 @@ export class PushService {
 
     PushNotifications.addListener('registration', (token: Token) => {
       console.log('Push registration success, token: ' + token.value);
-      // Aquí puedes enviar el token a tu backend Strapi
+      
     });
 
     PushNotifications.addListener('pushNotificationReceived', notification => {

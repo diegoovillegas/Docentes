@@ -18,32 +18,13 @@
   color: #fff;
 }
 
-/* Estilos para el encabezado y el pie de página. 
-  Aquí se aplican los colores oscuros de tu diseño original.
-*/
-ion-header, ion-footer {
+/* Estilos para el encabezado de la página */
+ion-header {
   --background: #000;
   --color: #fff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Aseguramos que el pie de página se fije y se muestre por encima de todo.
-  Esto soluciona el problema de visibilidad.
-*/
-ion-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: var(--ion-safe-area-bottom, 0); /* Para dispositivos con notch */
-}
-
-/* Estilos para las barras de herramientas.
-  Se mantienen los colores oscuros.
-*/
 ion-toolbar {
   --background: #000;
   --color: #fff;
@@ -55,35 +36,47 @@ ion-title {
   color: #fff;
 }
 
-/* Estilos para los botones.
-  Se usa un color blanco para el texto, como en tu diseño original.
-*/
-ion-button {
+/* Estilos para los botones en el header */
+ion-buttons ion-button {
   --color: #fff;
   --background: transparent;
   font-weight: 600;
   text-transform: none;
-  margin: 0 4px;
+}
+
+ion-back-button {
+  --color: #fff;
 }
 
 ion-button:hover {
   --background: rgba(255, 255, 255, 0.1);
 }
 
-/* --- Resto de estilos para la lista y los ítems --- */
+/* Estilos para el spinner de carga */
+ion-spinner {
+  width: 32px;
+  height: 32px;
+}
 
+p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Lista de estudiantes */
 ion-list {
   background: transparent;
 }
 
+/* Elementos de la lista */
 ion-item {
-  --background: rgba(0, 0, 0, 0.3);
+  --background: rgba(0, 0, 0, 0.3); /* Fondo semitransparente para ver el degradado */
   --color: #fff;
   border-radius: 10px;
   margin-bottom: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Avatar del estudiante */
 ion-avatar {
   background: #382933;
   padding: 4px;
@@ -99,10 +92,9 @@ ion-avatar ion-icon {
   color: #fff;
 }
 
+/* Etiquetas de la lista */
 ion-label {
   margin-left: 10px;
-  display: flex;
-  flex-direction: column;
 }
 
 ion-label h2 {
@@ -112,28 +104,13 @@ ion-label h2 {
   color: #fff;
 }
 
-ion-chip {
-  height: 24px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
+/* Mensaje de no alumnos asignados */
+.ion-text-center p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.item-buttons {
-  display: flex;
-  align-items: center;
-}
-
-ion-button[fill="clear"] {
-  --color: #fff;
-  font-weight: 700;
-  font-size: 14px;
-}
-
-ion-button[fill="clear"][disabled] {
-  --color: rgba(255, 255, 255, 0.5);
-}
-
+/* Ajustes responsivos */
 @media (min-width: 600px) {
   ion-list {
     width: 600px;

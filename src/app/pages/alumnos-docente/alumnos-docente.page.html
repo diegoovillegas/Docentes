@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Mis Alumnos</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Cerrar sesión
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding estudiantes-background">
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner color="light"></ion-spinner>
+    <p>Cargando alumnos...</p>
+  </div>
+
+  <ion-content class="ion-padding estudiantes-background">
+  <ion-list lines="none">
+    <ion-item *ngFor="let alumno of alumnos">
+      <ion-avatar slot="start">
+        <img
+          *ngIf="alumno.foto && alumno.foto[0]?.url"
+          [src]="'http://localhost:1337' + alumno.foto[0].url"
+          alt="Foto alumno"
+        />
+        <ion-icon *ngIf="!alumno.foto || !alumno.foto[0]?.url" name="person-circle-outline"></ion-icon>
+      </ion-avatar>
+
+      <ion-label>
+        <h2>{{ alumno.nombre }} {{ alumno.apellido }}</h2>
+        <!-- <p>{{ alumno.documentId }}</p> -->
+        <!-- <ion-chip [color]="alumno.asistenciaConfirmada ? 'success' : 'warning'">
+          {{ alumno.asistenciaConfirmada ? 'Asistencia Confirmada' : 'Pendiente' }}
+        </ion-chip> -->
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!isLoading && alumnos.length === 0" class="ion-text-center ion-padding">
+    <p>No tienes alumnos asignados.</p>
+  </div>
+</ion-content>

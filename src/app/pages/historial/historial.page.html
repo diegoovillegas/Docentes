@@ -1,23 +1,40 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Historial</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Historial de Entregas</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-list *ngIf="historial.length > 0; else noData">
-    <ion-item *ngFor="let item of historial">
+<ion-content [fullscreen]="true" class="historial-background">
+  <ion-searchbar 
+    placeholder="Buscar por nombre de alumno" 
+    [(ngModel)]="searchTerm" 
+    (ionChange)="filterHistorial()"
+    debounce="500">
+  </ion-searchbar>
+
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner></ion-spinner>
+    <p>Cargando historial...</p>
+  </div>
+
+  <ion-list *ngIf="!isLoading && filteredHistorial.length > 0">
+    <ion-item *ngFor="let item of filteredHistorial">
       <ion-label>
-        <h2>Fecha: {{ item.attributes.createdAt | date:'short' }}</h2>
-        <p>Alumno ID: {{ item.attributes.alumno.data.id }}</p>
-        <!-- Agrega más campos según lo que traiga tu API -->
+        <h2>{{ getAlumnoNombre(item.alumno.documentId) }}</h2> 
+        <p><strong>Nombre Entrega:</strong> {{ item.nombre_entrega || '-' }}</p>
+        <p><strong>Descripción:</strong> {{ item.descripcion || '-' }}</p>
+        <p><strong>Fecha Entrega:</strong> {{ item.fecha_entrega | date:'MMM d, y, h:mm a' }}</p>
+        <p><strong>Status:</strong> {{ item.status || '-' }}</p>
       </ion-label>
     </ion-item>
   </ion-list>
 
-  <ng-template #noData>
-    <ion-item>
-      <ion-label>No hay historial disponible</ion-label>
-    </ion-item>
-  </ng-template>
+  <ion-item *ngIf="!isLoading && filteredHistorial.length === 0" class="ion-text-center no-results">
+    <ion-label>
+      <p>No se encontraron resultados para "{{ searchTerm }}".</p>
+    </ion-label>
+  </ion-item>
 </ion-content>

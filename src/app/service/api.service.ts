@@ -11,71 +11,98 @@ export class ApiService {
 
   constructor(private storage: Storage) {}
 
-  // Login del usuario
-  async login(data: any): Promise<string> {
-    const res = await axios.post(`${this.url}/auth/local`, data);
-    return res.data.jwt;
+  async login(data: any) {
+    const res = await axios.post(this.url + '/auth/local', data);
+    const { jwt, user } = res.data;
+
+    const userRes = await axios.get(this.url + '/users/me?populate[role]=true', {
+      headers: {
+        Authorization: `Bearer ${jwt}`
+      }
+    });
+
+    return {
+      token: jwt,
+      user: userRes.data
+    };
   }
 
-  // Obtener todos los alumnos (sin paginar)
   async getAlumnos() {
     const res = await axios.get(`${this.url}/alumnos?populate=*`);
     return res.data.data;
   }
 
-  // Obtener alumnos con paginación y relaciones
   async getAlumnosPaginado(token: string) {
-    const headers = {
-      'Authorization': `Bearer ${token}`
-    };
+    const headers = { Authorization: `Bearer ${token}` };
     const url = `${this.url}/alumnos?populate[foto]=true&populate[persona_autorizadas][populate][foto]=true&populate[docente][populate][foto]=true`;
     const res = await axios.get(url, { headers });
     return res.data.data;
   }
 
-  // Obtener un alumno por ID (con relaciones)
-  async getAlumnoById(token: string, id: string) {
-    const headers = {
-      'Authorization': `Bearer ${token}`
-    };
-    const url = `${this.url}/alumnos/${id}?populate[foto]=true&populate[persona_autorizadas][populate][foto]=true&populate[docente][populate][foto]=true`;
-    const res = await axios.get(url, { headers });
-    return res.data.data;
-  }
-
-  // Confirmar entrega (crear nueva entrega)
-  async confirmarEntrega(alumnoId: string) {
-    const res = await axios.post(`${this.url}/entregas`, {
-      data: { alumno: alumnoId }
+  async confirmarEntrega(data: any, token: string) {
+    const res = await axios.post(`${this.url}/entregases`, {data}, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
     return res.data;
   }
 
-  // Obtener historial general
-  async getHistorial(token: string): Promise<any[]> {
-    try {
-      const headers = {
-        'Authorization': `Bearer ${token}`
-      };
-      const res = await axios.get(`${this.url}/historial`, { headers });
-      return res.data;
-    } catch (err) {
-      console.error('Error al obtener historial:', err);
-      return [];
-    }
+  async getMe(token: string) {
+    const res = await axios.get(`${this.url}/users/me?populate=*`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return res.data;
   }
 
-async getHistorialPorEstudiante(token: string, estudianteId: string): Promise<any[]> {
+ 
+
+async getEntregas(token: string) {
   try {
-    const headers = {
-      'Authorization': `Bearer ${token}`
-    };
-    const url = `${this.url}/historial/estudiante/${estudianteId}?populate=*`;
-    const res = await axios.get(url, { headers });
-    return res.data.data;
+    const headers = { Authorization: `Bearer ${token}` };
+    const res = await axios.get(`${this.url}/entregases?populate=*`, { headers });
+    return res.data.data || []; 
+    
   } catch (err) {
-    console.error('Error al obtener historial por estudiante:', err);
+    console.error('❌ Error al obtener el historial de entregas:', err);
     return [];
   }
 }
+
+  
+  async getHistorial(token: string): Promise<any[]> {
+    return []; 
+  }
+
+  async getHistorialPorEstudiante(token: string, estudianteId: string): Promise<any[]> {
+    return []; 
+  }
+
+  async updateUser(userId: number, userData: any, token: string) {
+    const headers = { Authorization: `Bearer ${token}` };
+    const res = await axios.put(`${this.url}/users/${userId}`, userData, { headers });
+    return res.data;
+  }
+
+  async getAlumnosPorDocente(token: string): Promise<any> {
+  try {
+    const response = await axios.get(`${this.url}/alumnos`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      params: {
+        // ✅ Se añade el parámetro 'populate' para traer la foto del alumno
+        'populate[foto]': true
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener alumnos del docente:', error);
+    throw error;
+  }
 }
+}
+  
+

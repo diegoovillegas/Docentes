@@ -1,29 +1,105 @@
-.login-background {
-  background: linear-gradient(180deg, #4c1d95 0%, #ec4899 100%);
-  display: flow-root;
-  justify-content: center;
-  align-items: center;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+:host {
+  display: block;
 }
 
-.login-container {
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 30px;
-  padding: 60px;
-  width: 100%;
-  max-width: 400px;
+/* fondo degradado ¿*/
+.login-background {
+  background: linear-gradient(
+    135deg,
+    #1a1a1a 0%,
+    #aa62b3 10%,
+    #6d2d86 30%,
+    #ee5e9f 40%,
+    #f72585 130%
+  );
+  position: relative;
+  min-height: 100vh;
+  --ion-background-color: transparent;
+}
+
+/* zona superior (muestra el degradado, pd: no mover) */
+.login-top {
+  height: 50vh; /* mitad superior */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 8vh;
+  z-index: 1;
+  color: #ffffff;
   text-align: center;
 }
 
 .login-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
   color: #fff;
-  margin-bottom: 20px;
-  font-size: 1.8rem;
 }
 
+.login-subtitle {
+  margin-top: 8px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+}
+
+/* Panel inferior negro (mitad inferior, no tanto la vdd) */
+.login-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60vh; /* tamaño  */
+  background: #000;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.4);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Contenedor interno para inputs, centrado */
+.login-wrapper {
+  width: 100%;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Inputs: contraste sobre fondo negro */
+.login-input {
+  --background: #382933;
+  --placeholder-color: #bdb0b8;
+  --color: #f3e8ee;
+  --border-radius: 10px;
+  height: 48px;
+  padding-left: 12px;
+  margin-bottom: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+}
+
+/* Botón principal */
 .login-button {
-  --background: #ec4899;
-  --background-hover: #db2777;
-  border-radius: 12px;
-  margin-top: 20px;
-  color: #fff;
+  --background: linear-gradient(90deg, #f72585);
+  --color: #ffffff;
+  --border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: none;
+  height: 48px;
+}
+
+/* Ajustes responsivos si hace falta */
+@media (min-width: 600px) {
+  .login-wrapper {
+    width: 420px;
+    margin: 0 auto;
+  }
 }

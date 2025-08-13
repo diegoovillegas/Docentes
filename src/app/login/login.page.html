@@ -1,14 +1,20 @@
-<ion-content [fullscreen]="true" class="login-background">
-  <div class="login-container">
+<ion-content class="login-background">
+  <div class="login-top">
     <h1 class="login-title">Bienvenido</h1>
-    <ion-item lines="none">
-      <ion-input placeholder="Usuario" [(ngModel)]="username"></ion-input>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-input placeholder="Contraseña" [(ngModel)]="password" type="password"></ion-input>
-    </ion-item>
-    <ion-button expand="block" (click)="login()" class="login-button">
-      Entrar
-    </ion-button>
+  </div>
+  <div class="login-bottom">
+    <div class="login-wrapper">
+      <div class="login-container">
+        <ion-item lines="none" class="login-input">
+          <ion-input placeholder="Usuario" [(ngModel)]="identifier"></ion-input>
+        </ion-item>
+        <ion-item lines="none" class="login-input">
+          <ion-input placeholder="Contraseña" [(ngModel)]="password" type="password"></ion-input>
+        </ion-item>
+        <ion-button expand="block" (click)="login()" class="login-button">
+          Entrar
+        </ion-button>
+      </div>
+    </div>
   </div>
 </ion-content>
