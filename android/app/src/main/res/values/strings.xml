@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DocentesApp</string>
+    <string name="title_activity_main">DocentesApp</string>
+    <string name="package_name">com.llegue.docentes</string>
+    <string name="custom_url_scheme">com.llegue.docentes</string>
+</resources>

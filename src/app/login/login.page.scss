@@ -4,7 +4,6 @@
   display: block;
 }
 
-/* fondo degradado ¿*/
 .login-background {
   background: linear-gradient(
     135deg,
@@ -19,9 +18,8 @@
   --ion-background-color: transparent;
 }
 
-/* zona superior (muestra el degradado, pd: no mover) */
 .login-top {
-  height: 50vh; /* mitad superior */
+  height: 50vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -46,13 +44,12 @@
   color: rgba(255,255,255,0.85);
 }
 
-/* Panel inferior negro (mitad inferior, no tanto la vdd) */
 .login-bottom {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 60vh; /* tamaño  */
+  height: 60vh;
   background: #000;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
@@ -61,18 +58,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box; 
+  padding: 0 24px;
 }
 
-/* Contenedor interno para inputs, centrado */
 .login-wrapper {
   width: 100%;
-  padding: 28px 24px;
+  max-width: 420px;
+  padding: 28px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-/* Inputs: contraste sobre fondo negro */
+/* ✅ CORRECCIÓN: Contenedor para alinear los inputs y el botón */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra los elementos horizontalmente */
+  width: 100%;
+}
+
 .login-input {
   --background: #382933;
   --placeholder-color: #bdb0b8;
@@ -83,9 +89,13 @@
   margin-bottom: 14px;
   font-family: 'Inter', sans-serif;
   font-size: 15px;
+  width: 100%; /* Asegura que el input ocupe el 100% del contenedor */
 }
 
-/* Botón principal */
+.login-input ion-input {
+  --height: 100%;
+}
+
 .login-button {
   --background: linear-gradient(90deg, #f72585);
   --color: #ffffff;
@@ -94,12 +104,22 @@
   font-size: 16px;
   text-transform: none;
   height: 48px;
+  width: 60%; 
 }
 
-/* Ajustes responsivos si hace falta */
 @media (min-width: 600px) {
   .login-wrapper {
     width: 420px;
     margin: 0 auto;
+  }
+
+  .login-bottom {
+    padding: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .login-title {
+    font-size: 28px;
   }
 }

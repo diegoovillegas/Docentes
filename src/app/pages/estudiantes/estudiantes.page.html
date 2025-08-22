@@ -1,10 +1,9 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar style="--background: black;">
     <ion-title>Estudiantes</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="logout()">
+      <ion-button (click)="logout()" color="danger">
         <ion-icon name="log-out-outline" slot="start"></ion-icon>
-        Cerrar sesión
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -48,6 +47,8 @@
         <ion-icon name="book-outline" slot="start"></ion-icon>
         Historial general
       </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
       <ion-button routerLink="/alumnos-docente">
         <ion-icon name="people-outline" slot="start"></ion-icon>
         Mis Alumnos

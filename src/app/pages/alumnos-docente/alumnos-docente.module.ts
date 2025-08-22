@@ -1,12 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular'; 
+import { AlumnosDocentePage } from './alumnos-docente.page';
 
 import { AlumnosDocentePageRoutingModule } from './alumnos-docente-routing.module';
-
-import { AlumnosDocentePage } from './alumnos-docente.page';
 
 @NgModule({
   imports: [

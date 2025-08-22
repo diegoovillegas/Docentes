@@ -40,8 +40,8 @@ export class AlumnosDocentePage implements OnInit {
       this.isLoading = true;
       const res = await this.api.getAlumnosPorDocente(this.token); 
       
-      // ✅ Corrected: Access the 'data' property of the response object
-      this.alumnos = res.data;
+ 
+      this.alumnos = res;
       
     } catch (error) {
       console.error('❌ Error obteniendo alumnos del docente:', error);

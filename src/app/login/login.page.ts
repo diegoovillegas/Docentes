@@ -35,7 +35,7 @@ export class LoginPage implements OnInit {
     }
 
     const loading = await this.loadingController.create({
-      message: 'Iniciando sesión...',
+      message: '',
     });
     await loading.present();
 

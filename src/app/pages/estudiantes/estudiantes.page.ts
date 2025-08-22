@@ -1,127 +1,147 @@
-// src/app/pages/estudiantes/estudiantes.page.ts
-
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage-angular';
 import { ApiService } from 'src/app/service/api.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 import { CambiarPasswordPage } from '../cambiar-password/cambiar-password.page';
 
 @Component({
   selector: 'app-estudiantes',
   templateUrl: './estudiantes.page.html',
   styleUrls: ['./estudiantes.page.scss'],
-  standalone: false
+  standalone: false,
 })
 export class EstudiantesPage implements OnInit {
   alumnos: any[] = [];
   token: string = '';
   usuario: any;
   lastConfirmationDates: { [documentId: string]: string } = {};
+  isLoading = true;
 
   constructor(
     private storage: Storage,
     private api: ApiService,
     private router: Router,
-    private modalController: ModalController
-  ) { }
+    private modalController: ModalController,
+    private toastController: ToastController
+  ) {}
 
   async ngOnInit() {
+    console.log('📲 Inicializando EstudiantesPage');
+
     await this.storage.create();
     
     const tokenData = await this.storage.get('token');
-    
-    if (tokenData?.token && tokenData?.user) {
+
+    if (tokenData?.token) {
       this.token = tokenData.token;
-      this.usuario = tokenData.user;
+      try {
+        this.usuario = await this.api.getMe(this.token);
+      } catch (error) {
+        console.error('❌ Error al obtener el usuario de la API:', error);
+        this.router.navigate(['/login']);
+        return;
+      }
     } else {
       this.router.navigate(['/login']);
       return;
     }
 
     if (this.usuario.requirePasswordChange) {
-      this.presentPasswordModal();
+      await this.presentPasswordModal();
     }
-    
+
     this.lastConfirmationDates = await this.storage.get('lastConfirmationDates') || {};
+
     await this.cargarAlumnos();
   }
 
   async presentPasswordModal() {
     const modal = await this.modalController.create({
       component: CambiarPasswordPage,
-      backdropDismiss: false 
+      backdropDismiss: false,
     });
     await modal.present();
 
     const { data } = await modal.onDidDismiss();
     if (data?.passwordChanged) {
-      const updatedTokenData = await this.storage.get('token');
-      if (updatedTokenData) {
-        this.usuario = updatedTokenData.user;
+      try {
+        this.usuario = await this.api.getMe(this.token);
+        const updatedTokenData = await this.storage.get('token');
+        if (updatedTokenData) {
+          this.usuario = updatedTokenData.user;
+        }
+      } catch (error) {
+        console.error('❌ Error al actualizar usuario después de cambiar contraseña:', error);
       }
     }
   }
 
   async cargarAlumnos() {
     try {
-      const res = await this.api.getAlumnosPaginado(this.token);
-      
-      // Obtiene la fecha actual en el mismo formato
+      this.isLoading = true;
+      const res = await this.api.getAlumnosPorDocente(this.token);
+
       const today = new Date().toISOString().split('T')[0];
-      
-      // Filtra la lista de alumnos para excluir a los que ya fueron confirmados hoy
+
       this.alumnos = res.filter((alumno: any) => {
-        const lastConfirmationDate = this.lastConfirmationDates[alumno.documentId];
+        const lastConfirmationDate = this.lastConfirmationDates[alumno.id];
         return lastConfirmationDate !== today;
       });
       
+      console.log('✅ Alumnos cargados:', this.alumnos);
+      
     } catch (error) {
       console.error('❌ Error obteniendo alumnos:', error);
+    } finally {
+      this.isLoading = false;
     }
   }
 
   async confirmarLlegada(alumno: any) {
-    if (!alumno?.documentId) {
+    if (!alumno?.id) {
       console.error('Alumno sin ID');
       return;
     }
 
     try {
-      const data = {
-        nombre_entrega: this.usuario.username,
-        descripcion: 'Se entregó el alumno',
-        fecha_entrega: new Date(),
-        estado: 'Aprobado',
-        alumno: alumno.documentId
+      const docenteId = this.usuario?.docente?.id;
+      if (!docenteId) {
+        console.error('No se encontró el ID del docente en el usuario.');
+        return;
+      }
+
+      const llegadaData = {
+        horaEntrega: new Date().toISOString(),
+        alumno: alumno.id,
+        docente: docenteId,
+        estado:'Entregado'
       };
 
-      await this.api.confirmarEntrega(data, this.token);
-      
-      this.alumnos = this.alumnos.filter(a => a.documentId !== alumno.documentId);
+      await this.api.postLlegada(llegadaData, this.token);
+
+      this.alumnos = this.alumnos.filter((a) => a.id !== alumno.id);
 
       const today = new Date().toISOString().split('T')[0];
-      this.lastConfirmationDates[alumno.documentId] = today;
+      this.lastConfirmationDates[alumno.id] = today;
       await this.storage.set('lastConfirmationDates', this.lastConfirmationDates);
 
-      const historialEntry = {
-        id: alumno.documentId,
-        nombre_entrega: this.usuario.username,
-        descripcion: 'Se entregó el alumno',
-        fecha_entrega: new Date().toISOString(),
-        status: 'Aprobado'
-      };
+      const toast = await this.toastController.create({
 
-      await this.agregarAlHistorial(historialEntry);
+        message: `Llegada de ${alumno.nombre} ${alumno.apellido} confirmada con éxito.`,
+        duration: 2000,
+        color: 'success',
+      });
+      await toast.present();
     } catch (error) {
-      console.error('❌ Error confirmando entrega:', error);
+      console.error('❌ Error confirmando llegada:', error);
+      const toast = await this.toastController.create({
+        message: 'Error al confirmar llegada. Inténtalo de nuevo.',
+        duration: 2000,
+        color: 'danger',
+      });
+      await toast.present();
     }
-  }
-
-  async agregarAlHistorial(entrada: any) {
-    let historial = (await this.storage.get('historial')) || [];
-    historial.unshift(entrada);
-    await this.storage.set('historial', historial);
   }
 
   irHistorial(alumno?: any) {
@@ -131,17 +151,15 @@ export class EstudiantesPage implements OnInit {
       this.router.navigate(['/historial']);
     }
   }
-  
+
   async logout() {
     await this.storage.remove('token');
     this.router.navigate(['/login']);
   }
 
-  isConfirmationDisabled(alumnoDocumentId: string): boolean {
-    const lastDate = this.lastConfirmationDates[alumnoDocumentId];
-    if (!lastDate) {
-      return false;
-    }
+  isConfirmationDisabled(alumnoId: string): boolean {
+    const lastDate = this.lastConfirmationDates[alumnoId];
+    if (!lastDate) return false;
     const today = new Date().toISOString().split('T')[0];
     return lastDate === today;
   }

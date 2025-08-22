@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "719577250535",
+    "project_id": "docentesfronted",
+    "storage_bucket": "docentesfronted.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:719577250535:android:3bf39614b122ada1c80042",
+        "android_client_info": {
+          "package_name": "com.tuapp.docentes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFfJeVWX-mkDzdHJvjZNyGrKMbT0YrHHU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

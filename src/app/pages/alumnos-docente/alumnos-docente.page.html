@@ -7,9 +7,9 @@
     <ion-title>Mis Alumnos</ion-title>
 
     <ion-buttons slot="end">
-      <ion-button (click)="logout()">
+      <ion-button (click)="logout()" color="danger">
         <ion-icon name="log-out-outline" slot="start"></ion-icon>
-        Cerrar sesión
+        
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -20,7 +20,6 @@
     <p>Cargando alumnos...</p>
   </div>
 
-  <ion-content class="ion-padding estudiantes-background">
   <ion-list lines="none">
     <ion-item *ngFor="let alumno of alumnos">
       <ion-avatar slot="start">
@@ -34,11 +33,7 @@
 
       <ion-label>
         <h2>{{ alumno.nombre }} {{ alumno.apellido }}</h2>
-        <!-- <p>{{ alumno.documentId }}</p> -->
-        <!-- <ion-chip [color]="alumno.asistenciaConfirmada ? 'success' : 'warning'">
-          {{ alumno.asistenciaConfirmada ? 'Asistencia Confirmada' : 'Pendiente' }}
-        </ion-chip> -->
-      </ion-label>
+        </ion-label>
     </ion-item>
   </ion-list>
 

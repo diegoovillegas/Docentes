@@ -1,33 +1,22 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-    <ion-title>Historial de Entregas</ion-title>
+<ion-header>
+  <ion-toolbar  style="--background: black;">
+    <ion-title>Historial de Llegadas</ion-title>
+    <ion-back-button slot="start"></ion-back-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="historial-background">
-  <ion-searchbar 
-    placeholder="Buscar por nombre de alumno" 
-    [(ngModel)]="searchTerm" 
-    (ionChange)="filterHistorial()"
-    debounce="500">
-  </ion-searchbar>
-
-  <div *ngIf="isLoading" class="ion-text-center ion-padding">
-    <ion-spinner></ion-spinner>
-    <p>Cargando historial...</p>
-  </div>
+  <ion-searchbar [(ngModel)]="searchTerm" (ionChange)="filterHistorial()" placeholder="Buscar por nombre"></ion-searchbar>
 
   <ion-list *ngIf="!isLoading && filteredHistorial.length > 0">
     <ion-item *ngFor="let item of filteredHistorial">
       <ion-label>
-        <h2>{{ getAlumnoNombre(item.alumno.documentId) }}</h2> 
-        <p><strong>Nombre Entrega:</strong> {{ item.nombre_entrega || '-' }}</p>
-        <p><strong>Descripción:</strong> {{ item.descripcion || '-' }}</p>
-        <p><strong>Fecha Entrega:</strong> {{ item.fecha_entrega | date:'MMM d, y, h:mm a' }}</p>
-        <p><strong>Status:</strong> {{ item.status || '-' }}</p>
+        <h2>Alumno: {{ getNombre(alumnosMap, item.alumno?.documentId) }}</h2>
+        <p><strong>Hora Llegada:</strong> {{ item.horaLlegada | date:'MMM d, y, h:mm a' : ''}}</p>
+        <p><strong>Hora Entrega:</strong> {{ item.horaEntrega | date:'MMM d, y, h:mm a' : ''}}</p>
+        <p><strong>Docente:</strong> {{ getNombre(docentesMap, item.docente?.documentId) }}</p>
+        <p><strong>Persona Autorizada:</strong> {{ getNombre(personasAutorizadasMap, item.persona_autorizada?.documentId) }}</p>
+        <p><strong>Estado:</strong> {{ item.estado }}</p>
       </ion-label>
     </ion-item>
   </ion-list>
