@@ -15,6 +15,7 @@ export class AlumnosDocentePage implements OnInit {
   alumnos: any[] = [];
   token: string = '';
   isLoading = true;
+  usuario:any;
 
   constructor(
     private storage: Storage,
@@ -26,9 +27,12 @@ export class AlumnosDocentePage implements OnInit {
     await this.storage.create();
     
     const tokenData = await this.storage.get('token');
-    
+    this.usuario = tokenData.user
+     console.log(this.usuario)
     if (tokenData?.token) {
       this.token = tokenData.token;
+      
+     
       await this.cargarAlumnos();
     } else {
       this.router.navigate(['/login']);
@@ -51,8 +55,15 @@ export class AlumnosDocentePage implements OnInit {
     }
   }
 
-  logout() {
-    this.storage.remove('token');
+  async logout() {
+    const documentId = this.usuario?.documentId
+    await this.storage.remove('token');
+    await this.api.putToken_push(documentId, '').then((res) => {
+        console.log(res)
+      }).catch((error) => {
+        console.log(error)
+      })
     this.router.navigate(['/login']);
+    
   }
 }

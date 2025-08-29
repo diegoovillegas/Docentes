@@ -24,13 +24,13 @@ export class EstudiantesPage implements OnInit {
     private router: Router,
     private modalController: ModalController,
     private toastController: ToastController
-  ) {}
+  ) { }
 
   async ngOnInit() {
     console.log('📲 Inicializando EstudiantesPage');
 
     await this.storage.create();
-    
+
     const tokenData = await this.storage.get('token');
 
     if (tokenData?.token) {
@@ -53,7 +53,10 @@ export class EstudiantesPage implements OnInit {
 
     this.lastConfirmationDates = await this.storage.get('lastConfirmationDates') || {};
 
-    await this.cargarAlumnos();
+  setInterval(() => {
+  this.cargarAlumnos();
+}, 3000);
+
   }
 
   async presentPasswordModal() {
@@ -82,14 +85,28 @@ export class EstudiantesPage implements OnInit {
       this.isLoading = true;
       const res = await this.api.getAlumnosPorDocente(this.token);
 
-      const today = new Date().toISOString().split('T')[0];
+      const ahora = new Date();
 
       this.alumnos = res.filter((alumno: any) => {
-        const lastConfirmationDate = this.lastConfirmationDates[alumno.id];
-        return lastConfirmationDate !== today;
+        if (!alumno.llegadas || alumno.llegadas.length === 0) {
+          return false; // sin llegadas -> descartar
+        }
+
+        // Tomar la última llegada (la de mayor fecha)
+        const ultimaLlegada = alumno.llegadas.reduce((latest: any, current: any) => {
+          return new Date(current.horaLlegada) > new Date(latest.horaLlegada) ? current : latest;
+        });
+
+        // Si ya tiene horaEntrega -> descartar
+        if (ultimaLlegada.horaEntrega) {
+          return false;
+        }
+
+        // Verificar que sea dentro de las últimas 24h
+        const diffHoras = (ahora.getTime() - new Date(ultimaLlegada.horaLlegada).getTime()) / (1000 * 60 * 60);
+        return diffHoras <= 24;
       });
-      
-      console.log('✅ Alumnos cargados:', this.alumnos);
+
       
     } catch (error) {
       console.error('❌ Error obteniendo alumnos:', error);
@@ -98,41 +115,45 @@ export class EstudiantesPage implements OnInit {
     }
   }
 
+
   async confirmarLlegada(alumno: any) {
-    if (!alumno?.id) {
+    if (!alumno?.documentId) {
       console.error('Alumno sin ID');
       return;
     }
 
     try {
-      const docenteId = this.usuario?.docente?.id;
-      if (!docenteId) {
-        console.error('No se encontró el ID del docente en el usuario.');
+      // Tomar la última llegada
+      if (!alumno.llegadas || alumno.llegadas.length === 0) {
+        console.error('Alumno no tiene llegadas registradas.');
         return;
       }
 
+      const ultimaLlegada = alumno.llegadas.reduce((latest: any, current: any) => {
+        return new Date(current.horaLlegada) > new Date(latest.horaLlegada) ? current : latest;
+      });
+
       const llegadaData = {
         horaEntrega: new Date().toISOString(),
-        alumno: alumno.id,
-        docente: docenteId,
-        estado:'Entregado'
+        
       };
+      await this.api.updateLlegada(ultimaLlegada.documentId, llegadaData, this.token);
 
-      await this.api.postLlegada(llegadaData, this.token);
-
-      this.alumnos = this.alumnos.filter((a) => a.id !== alumno.id);
+      this.alumnos = this.alumnos.filter(a => a.documentId !== alumno.documentId);
 
       const today = new Date().toISOString().split('T')[0];
-      this.lastConfirmationDates[alumno.id] = today;
+      this.lastConfirmationDates[alumno.documentId] = today;
       await this.storage.set('lastConfirmationDates', this.lastConfirmationDates);
 
+      // Mostrar toast
       const toast = await this.toastController.create({
-
         message: `Llegada de ${alumno.nombre} ${alumno.apellido} confirmada con éxito.`,
         duration: 2000,
         color: 'success',
+        position:'middle'
       });
       await toast.present();
+
     } catch (error) {
       console.error('❌ Error confirmando llegada:', error);
       const toast = await this.toastController.create({
@@ -143,6 +164,7 @@ export class EstudiantesPage implements OnInit {
       await toast.present();
     }
   }
+
 
   irHistorial(alumno?: any) {
     if (alumno) {

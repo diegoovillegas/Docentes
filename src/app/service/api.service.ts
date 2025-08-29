@@ -73,7 +73,15 @@ export class ApiService {
     }
   }
 
+    async putToken_push(userId: number, token: any) {
+      console.log('este es el usuario',token)
+    const headers = { Authorization: `Bearer ${token}` };
+    const res = await axios.put(`${this.url}/docentes/${userId}`, {data: {token_push: token}});
+    return res.data;
+  }
+
   async updateUser(userId: number, userData: any, token: string) {
+    
     const headers = { Authorization: `Bearer ${token}` };
     const res = await axios.put(`${this.url}/users/${userId}`, userData, { headers });
     return res.data;
@@ -87,19 +95,28 @@ export class ApiService {
     
   }
 
-  async getAlumnosPorDocente(token: string): Promise<any[]> {
+    updateLlegada(llegadaId: number, data: any, token: string) {
+  return axios.put(`${this.url}/llegadas/${llegadaId}`, {data}, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
+
+ async getAlumnosPorDocente(token: string){
     try {
       const user = await this.getMe(token);
-      const userId = user.id;
+      const userId = user.documentId;
+      console.log(user)
 
       const docenteRes = await axios.get(
-        `${this.url}/docentes?filters[user][id][$eq]=${userId}`,
+        `${this.url}/docentes?filters[user][documentId][$eq]=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
           }
         }
       );
+      
 
       const docente = docenteRes.data.data[0];
       if (!docente) {
@@ -107,10 +124,12 @@ export class ApiService {
         return [];
       }
 
-      const docenteId = docente.id;
+      console.log('docente', docente)
 
+      const docenteId = docente.documentId;
+      console.log('este es el id',docenteId)
       const alumnosRes = await axios.get(
-        `${this.url}/alumnos?filters[docente][id][$eq]=${docenteId}&populate[foto]=true`,
+        `${this.url}/alumnos?filters[docente][documentId][$eq]=${docenteId}&populate=*`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -118,7 +137,7 @@ export class ApiService {
         }
       );
 
-      console.log('✅ Alumnos encontrados:', alumnosRes.data.data);
+      console.log('✅ Alumnos encontrados:', alumnosRes.data);
       return alumnosRes.data.data;
     } catch (error) {
       console.error('❌ Error al obtener alumnos del docente:', error);
@@ -165,4 +184,24 @@ export class ApiService {
       return [];
     }
   }
+
+  async updateDocenteByDocumentId(documentId: string, data: any, token: string) {
+    try {
+      const response = await axios.put(
+        `${this.url}/docentes/${documentId}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error en updateDocenteByDocumentId:', error);
+      throw error;
+    }
+  }
+
 }
